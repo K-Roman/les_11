@@ -8,9 +8,33 @@
 # Лог файл открывать каждый раз при ошибке в режиме 'a'
 
 
-def log_errors(func):
-    pass
-    # TODO здесь ваш код
+def log_errors(func, *args, **kwargs):
+    try:
+        func(*args, **kwargs)
+    except as exc:
+        with open('function_errors.log', 'a', encoding='utf8') as func_err:
+            func_err.write(f'имя функции - {func.__name__}, параметры вызова - {func.args, func.kwargs}, тип ошибки - {exc}, {exc.args}')
+            raise
+
+
+
+def log_errors(log_file):
+    def erro(func):
+        def lovli(*args, **kwargs):
+            try:
+                func(*args, **kwargs)
+            except Exception as exc:
+                with open(log_file, 'a', encoding='utf8') as func_err:
+                    func_err.write(f'имя функции - {func.__name__}, параметры вызова - {func.__code__}, '
+                                   f'тип ошибки - {type(exc)}, {exc.__str__()}\n')
+                    print(f'имя функции - {func.__name__}, параметры вызова - {func.__code__.co_varnames}, '
+                          f'тип ошибки - {type(exc)}, {exc.__str__()}')
+        return lovli
+
+    return erro
+
+
+
 
 
 # Проверить работу на следующих функциях
@@ -53,3 +77,13 @@ perky(param=42)
 # def func():
 #     pass
 
+def log_errors(func):
+    def lovli(*args, **kwargs):
+        try:
+            func(*args, **kwargs)
+        except Exception as exc:
+            with open('function_errors.log', 'a', encoding='utf8') as func_err:
+                func_err.write(f'имя функции - {func.__name__}, параметры вызова - {func.__code__}, тип ошибки - {type(exc)}, {exc.__str__()}\n')
+                print(f'имя функции - {func.__name__}, параметры вызова - {func.__code__.co_varnames}, тип ошибки - {type(exc)}, {exc.__str__()}')
+
+    return lovli
